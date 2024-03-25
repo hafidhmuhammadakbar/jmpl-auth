@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,6 +22,8 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+
+Route::post('/login', [LoginController::class, 'login']);
 
 // 2fa middleware
 Route::middleware(['2fa'])->group(function () {

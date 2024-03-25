@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+
 class LoginController extends Controller
 {
     /*
@@ -35,5 +38,36 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            // Authentication passed
+            return redirect()->intended('home');
+        }
+
+        // Increment login count on failed login
+        $this->incrementLoginAttempts($request);
+
+        // Redirect back with error message
+        return redirect()->back()
+            ->withInput($request->only('email'))
+            ->withErrors([
+                'email' => 'These credentials do not match our records.',
+            ]);
+    }
+
+    protected function incrementLoginAttempts(Request $request)
+    {
+        $attempts = $request->session()->get('loginAttemptCount', 0) + 1;
+        $request->session()->put('loginAttemptCount', $attempts);
+    }
+
+    protected function clearLoginAttempts(Request $request)
+    {
+        $request->session()->forget('loginAttemptCount');
     }
 }

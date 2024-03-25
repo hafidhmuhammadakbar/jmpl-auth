@@ -53,7 +53,12 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6 offset-md-4">
-                                <div class="g-recaptcha" data-sitekey="6LcOj5kpAAAAABO4WTIdspZqHIgrjF076SOP8H07"></div>
+                                {{-- <div class="g-recaptcha" data-sitekey="6LcOj5kpAAAAABO4WTIdspZqHIgrjF076SOP8H07"></div> --}}
+                                @if ($errors->has('email'))
+                                    @if(session()->has('loginAttemptCount') && session('loginAttemptCount') >= 3)
+                                        <div class="g-recaptcha" data-sitekey="6LcOj5kpAAAAABO4WTIdspZqHIgrjF076SOP8H07"></div>
+                                    @endif
+                                @endif
                             </div>
                         </div>
 
