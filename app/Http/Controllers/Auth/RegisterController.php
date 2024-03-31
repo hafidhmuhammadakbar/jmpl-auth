@@ -57,6 +57,7 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'username' => ['required', 'string', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
@@ -72,6 +73,7 @@ class RegisterController extends Controller
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'username' => $data['username'],
             'password' => Hash::make($data['password']),
             'google2fa_secret' => $data['google2fa_secret'],
         ]);
@@ -92,7 +94,7 @@ class RegisterController extends Controller
 
         $QR_Image = $google2fa->getQRCodeInline(
             config('app.name'),
-            $registration_data['email'],
+            $registration_data['username'],
             $registration_data['google2fa_secret']
         );
         return view('google2fa.register', ['QR_Image' => $QR_Image, 'secret' => $registration_data['google2fa_secret']]);

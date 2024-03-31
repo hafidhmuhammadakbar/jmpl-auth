@@ -46,22 +46,22 @@ class LoginController extends Controller
     {
         $attempts = $request->session()->get('loginAttemptCount', 0);
         
-        // Check if email exists in the request
-        $email = $request->input('email');
-        $user = User::where('email', $email)->first();
+        // Check if username exists in the request
+        $username = $request->input('username');
+        $user = User::where('username', $username)->first();
         
         if (!$user) {
-            // Email not registered
+            // username not registered
             return redirect()->back()
-                ->withInput($request->only('email'))
+                ->withInput($request->only('username'))
                 ->withErrors([
-                    'email' => 'This email is not registered.',
+                    'username' => 'This username is not registered.',
                 ]);
         }
     
-        // Email exists, proceed with authentication
+        // username exists, proceed with authentication
         if ($attempts < 3) {
-            $credentials = $request->only('email', 'password');    
+            $credentials = $request->only('username', 'password');    
         }
         else {
             // Validate reCAPTCHA
@@ -73,13 +73,13 @@ class LoginController extends Controller
             
             if (!$captchaResponse->json('success')) {
                 return redirect()->back()
-                    ->withInput($request->only('email'))
+                    ->withInput($request->only('username'))
                     ->withErrors([
                         'g-recaptcha' => 'Please fill the recapthca.',
                     ]);
             }
             
-            $credentials = $request->only('email', 'password');
+            $credentials = $request->only('username', 'password');
         }
         
         if (Auth::attempt($credentials)) {
@@ -94,7 +94,7 @@ class LoginController extends Controller
     
         // Redirect back with error message for incorrect password
         return redirect()->back()
-            ->withInput($request->only('email'))
+            ->withInput($request->only('username'))
             ->withErrors([
                 'password' => 'The password entered is incorrect.',
             ]);
