@@ -42,9 +42,17 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
-
+        $attempts = $request->session()->get('loginAttemptCount', 0);
+        if ($attempts < 3) {
+            $credentials = $request->only('email', 'password');    
+        }
+        else {
+            $credentials = $request->only('email', 'password', 'g-recaptcha');
+        }
+        
         if (Auth::attempt($credentials)) {
+            $this->clearLoginAttempts($request);
+            
             // Authentication passed
             return redirect()->intended('home');
         }
